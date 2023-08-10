@@ -5,8 +5,12 @@ export interface Item {
     rate: number;
 }
 
+export type Hostility = "friendly" | "neutral" | "enemy";
+
 export interface NPC {
     name: string;
     lvlMin: number;
     lvlMax: number;
+    allianceHostility: Hostility;
+    hordeHostility: Hostility;
 }
