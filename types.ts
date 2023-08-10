@@ -15,3 +15,8 @@ export interface NPC {
     allianceHostility: Hostility;
     hordeHostility: Hostility;
 }
+
+export type NPCWithItems = {
+    drops: Item[];
+    skinning: Item[];
+} & NPC;
