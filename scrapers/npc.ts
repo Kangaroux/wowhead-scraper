@@ -4,10 +4,9 @@ import { Hostility, NPC } from "../types";
 export async function scrapeNPC(page: Page, id: number): Promise<NPC> {
     await page.goto(`https://www.wowhead.com/classic/npc=${id}`);
 
-    let allianceHostility: Hostility = "enemy";
-    let hordeHostility: Hostility = "enemy";
-    let lvlMin = 0;
-    let lvlMax = 0;
+    let factionHostility: FactionHostility = {alliance: "enemy", horde: "enemy"};
+    let levelRange: LevelRange = {min: 0, max: 0};
+
     const name = await page.$eval(".main-contents h1", el => el.textContent) || "";
     const quickFacts = await page.$$("#infobox-contents-0 li");
 
@@ -16,31 +15,27 @@ export async function scrapeNPC(page: Page, id: number): Promise<NPC> {
         const text = await fact.evaluate(el => el.innerText);
 
         if(text.includes("Level:")) {
-            const range = getLevelRange(text);
-            lvlMin = range.min;
-            lvlMax = range.max;
+            levelRange = getLevelRange(text);
         } else if(text.includes("React:")) {
-            const hostility = await getFactionHostility(fact);
-            allianceHostility = hostility.alliance;
-            hordeHostility = hostility.horde;
+            factionHostility = await getFactionHostility(fact);
         }
     }
 
     return {
-        allianceHostility,
-        hordeHostility,
-        lvlMin,
-        lvlMax,
+        allianceHostility: factionHostility.alliance,
+        hordeHostility: factionHostility.horde,
+        lvlMin: levelRange.min,
+        lvlMax: levelRange.max,
         name,
     }
 }
 
-interface levelRange {
+interface LevelRange {
     min: number;
     max: number;
 }
 
-function getLevelRange(text: string): levelRange {
+function getLevelRange(text: string): LevelRange {
     if(text === "Level: ??") {
         return {min: 63, max: 63};
     }
@@ -57,7 +52,7 @@ function getLevelRange(text: string): levelRange {
     return {min: 0, max: 0};
 }
 
-interface factionHostility {
+interface FactionHostility {
     alliance: Hostility;
     horde: Hostility;
 }
@@ -68,7 +63,7 @@ const classNameToHostility: Readonly<Record<string, Hostility>> = {
     q2: "friendly",
 }
 
-async function getFactionHostility(el: ElementHandle<HTMLElement>): Promise<factionHostility> {
+async function getFactionHostility(el: ElementHandle<HTMLElement>): Promise<FactionHostility> {
     const spans = await el.$$("span");
 
     const alliance = await spans[0].evaluate(el => el.getAttribute("class")) as string;
