@@ -1,14 +1,14 @@
 import { Page } from "puppeteer";
-import { Item } from "./types";
+import { Item } from "../types";
 
-export async function scrapeAllItemDrops(page: Page): Promise<Item[]> {
+export async function scrapeAllDrops(page: Page): Promise<Item[]> {
     await page.click("a[href=\"#drops\"]");
     await page.click("xpath///div[@class=\"listview-nav\"]//a[contains(text(), \"First\")]");
 
-    let items: Item[] = [];
+    const results: Item[] = [];
 
     while(true) {
-        items.push(...await scrapeItemTable(page));
+        results.push(...await scrapeDropTable(page));
 
         const nextBtn = await page.$("xpath///div[@class=\"listview-nav\"]//a[contains(text(), \"Next\")]");
         const isActive = await nextBtn?.evaluate(el => el.getAttribute("data-active") === "yes");
@@ -20,10 +20,10 @@ export async function scrapeAllItemDrops(page: Page): Promise<Item[]> {
         }
     }
 
-    return items;
+    return results;
 }
 
-export async function scrapeItemTable(page: Page): Promise<Item[]> {
+export async function scrapeDropTable(page: Page): Promise<Item[]> {
     const results: Item[] = [];
     const tableRows = await page.$$("#tab-drops tbody tr");
 
@@ -50,7 +50,7 @@ export async function scrapeItemTable(page: Page): Promise<Item[]> {
         const itemDropRate = parseFloat(await cells[12].evaluate(el => el.textContent) || "0");
 
         results.push({
-            dropRate: itemDropRate,
+            rate: itemDropRate,
             id: itemId,
             name: itemName,
             type: itemType,
