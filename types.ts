@@ -4,3 +4,9 @@ export interface Item {
     type: string;
     rate: number;
 }
+
+export interface NPC {
+    name: string;
+    lvlMin: number;
+    lvlMax: number;
+}

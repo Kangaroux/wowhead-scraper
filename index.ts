@@ -2,6 +2,7 @@ import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import AdblockerPlugin from "puppeteer-extra-plugin-adblocker";
 import { scrapeAllDrops } from "./scrapers/drops";
+import { scrapeNPC } from "./scrapers/npc";
 
 puppeteer.use(StealthPlugin());
 puppeteer.use(AdblockerPlugin());
@@ -10,10 +11,13 @@ puppeteer.use(AdblockerPlugin());
     const browser = await puppeteer.launch({headless:false});
     const page = await browser.newPage();
 
-    await page.goto("https://www.wowhead.com/classic/npc=3242");
+    const info = await scrapeNPC(page, 3242);
+    console.log(info);
 
-    const drops = await scrapeAllDrops(page);
-    console.log(drops)
+    // await page.goto("https://www.wowhead.com/classic/npc=3242");
+
+    // const drops = await scrapeAllDrops(page);
+    // console.log(drops)
 
     await browser.close();
 })();
