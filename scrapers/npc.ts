@@ -6,8 +6,7 @@ export async function scrapeNPC(page: Page, id: number): Promise<NPC> {
 
     let factionHostility: FactionHostility = {alliance: "enemy", horde: "enemy"};
     let levelRange: LevelRange = {min: 0, max: 0};
-
-    const name = await page.$eval(".main-contents h1", el => el.textContent) || "";
+    const nameAndTitle = await getNameAndTitle(page);
     const quickFacts = await page.$$("#infobox-contents-0 li");
 
     // Extract the level range from the "quick facts" section
@@ -26,7 +25,8 @@ export async function scrapeNPC(page: Page, id: number): Promise<NPC> {
         hordeHostility: factionHostility.horde,
         lvlMin: levelRange.min,
         lvlMax: levelRange.max,
-        name,
+        name: nameAndTitle.name,
+        title: nameAndTitle.title,
     }
 }
 
@@ -72,5 +72,27 @@ async function getFactionHostility(el: ElementHandle<HTMLElement>): Promise<Fact
     return {
         alliance: classNameToHostility[alliance],
         horde: classNameToHostility[horde],
+    }
+}
+
+interface NameAndTitle {
+    name: string;
+    title: string;
+}
+
+async function getNameAndTitle(page: Page): Promise<NameAndTitle> {
+    const text = await page.$eval(".main-contents h1", el => el.textContent) as string;
+    const natMatch = /(.*?)<(.*?)>/.exec(text);
+
+    if(natMatch) {
+        return {
+            name: natMatch[1].trim(),
+            title: natMatch[2],
+        };
+    }
+
+    return {
+        name: text,
+        title: "",
     }
 }

@@ -11,7 +11,7 @@ puppeteer.use(AdblockerPlugin());
     const browser = await puppeteer.launch({headless:false});
     const page = await browser.newPage();
 
-    const info = await scrapeNPC(page, 3242);
+    const info = await scrapeNPC(page, 4949);
     console.log(info);
 
     // await page.goto("https://www.wowhead.com/classic/npc=3242");
