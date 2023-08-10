@@ -11,7 +11,7 @@ puppeteer.use(AdblockerPlugin());
     const browser = await puppeteer.launch({headless:false});
     const page = await browser.newPage();
 
-    const data = await scrapeFullNPC(page, 4949);
+    const data = await scrapeFullNPC(page, 2244);
     console.log(data);
 
     await browser.close();

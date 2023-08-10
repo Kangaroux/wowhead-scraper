@@ -1,29 +1,10 @@
 import { ElementHandle, Page } from "puppeteer";
 import { Item } from "../types";
+import { scrapeTab } from "./util";
 
 export async function scrapeAllDrops(page: Page): Promise<Item[]> {
     await page.click("a[href=\"#drops\"]");
-
-    const view = await page.$("#tab-drops");
-    const firstBtn = await view.$("xpath/div[contains(@class, \"listview-band-top\")]//a[contains(text(), \"First\")]");
-    await firstBtn.click();
-
-    const results: Item[] = [];
-
-    while(true) {
-        results.push(...await scrapeDropTable(view));
-
-        const nextBtn = await view.$("xpath///div[contains(@class, \"listview-band-top\")]//a[contains(text(), \"Next\")]");
-        const isActive = await nextBtn?.evaluate(el => el.getAttribute("data-active") === "yes");
-
-        if(nextBtn && isActive) {
-            await nextBtn.click();
-        } else {
-            break;
-        }
-    }
-
-    return results;
+    return await scrapeTab(page, "#tab-drops", scrapeDropTable);
 }
 
 async function scrapeDropTable(view: ElementHandle): Promise<Item[]> {

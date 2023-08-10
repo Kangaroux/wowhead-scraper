@@ -1,5 +1,6 @@
 import { ElementHandle, Page } from "puppeteer";
 import { Item } from "../types";
+import { scrapeTab } from "./util";
 
 export async function scrapeAllPickpocketing(page: Page): Promise<Item[]> {
     const tabBtn = await page.$("a[href=\"#pickpocketing\"]");
@@ -10,27 +11,7 @@ export async function scrapeAllPickpocketing(page: Page): Promise<Item[]> {
     }
 
     await tabBtn.click();
-
-    const view = await page.$("#tab-pickpocketing");
-    const firstBtn = await view.$("xpath/div[contains(@class, \"listview-band-top\")]//a[contains(text(), \"First\")]");
-    await firstBtn.click();
-
-    const results: Item[] = [];
-
-    while(true) {
-        results.push(...await scrapePickpocketTable(view));
-
-        const nextBtn = await view.$("xpath///div[contains(@class, \"listview-band-top\")]//a[contains(text(), \"Next\")]");
-        const isActive = await nextBtn?.evaluate(el => el.getAttribute("data-active") === "yes");
-
-        if(nextBtn && isActive) {
-            await nextBtn.click();
-        } else {
-            break;
-        }
-    }
-
-    return results;
+    return await scrapeTab(page, "#tab-pickpocketing", scrapePickpocketTable);
 }
 
 async function scrapePickpocketTable(view: ElementHandle): Promise<Item[]> {

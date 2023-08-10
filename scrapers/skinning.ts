@@ -1,5 +1,6 @@
 import { ElementHandle, Page } from "puppeteer";
 import { Item } from "../types";
+import { scrapeTab } from "./util";
 
 export async function scrapeAllSkinning(page: Page): Promise<Item[]> {
     const tabBtn = await page.$("a[href=\"#skinning\"]");
@@ -10,27 +11,7 @@ export async function scrapeAllSkinning(page: Page): Promise<Item[]> {
     }
 
     await tabBtn.click();
-
-    const view = await page.$("#tab-skinning");
-    const firstBtn = await view.$("xpath/div[contains(@class, \"listview-band-top\")]//a[contains(text(), \"First\")]");
-    await firstBtn.click();
-
-    const results: Item[] = [];
-
-    while(true) {
-        results.push(...await scrapeSkinningTable(view));
-
-        const nextBtn = await view.$("xpath///div[contains(@class, \"listview-band-top\")]//a[contains(text(), \"Next\")]");
-        const isActive = await nextBtn?.evaluate(el => el.getAttribute("data-active") === "yes");
-
-        if(nextBtn && isActive) {
-            await nextBtn.click();
-        } else {
-            break;
-        }
-    }
-
-    return results;
+    return scrapeTab(page, "#tab-skinning", scrapeSkinningTable);
 }
 
 async function scrapeSkinningTable(view: ElementHandle): Promise<Item[]> {
