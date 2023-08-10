@@ -5,7 +5,10 @@ import { scrapeNPCInfo } from "./npc";
 import { scrapeAllSkinning } from "./skinning";
 import { scrapeAllPickpocketing } from "./pickpocketing";
 
-export async function scrapeFullNPC(page: Page, id: number): Promise<NPCWithItems> {
+export async function scrapeFullNPC(
+    page: Page,
+    id: number,
+): Promise<NPCWithItems> {
     const npc = await scrapeNPCInfo(page, id);
     const drops = await scrapeAllDrops(page);
     const pickpocketing = await scrapeAllPickpocketing(page);
@@ -15,6 +18,6 @@ export async function scrapeFullNPC(page: Page, id: number): Promise<NPCWithItem
         drops,
         pickpocketing,
         skinning,
-        ...npc
+        ...npc,
     };
 }

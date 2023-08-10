@@ -7,8 +7,8 @@ import { scrapeFullNPC } from "./scrapers/full";
 puppeteer.use(StealthPlugin());
 puppeteer.use(AdblockerPlugin());
 
-(async() => {
-    const browser = await puppeteer.launch({headless: "new"});
+(async () => {
+    const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
 
     console.log("Starting scrape");
@@ -17,7 +17,11 @@ puppeteer.use(AdblockerPlugin());
     const data = await scrapeFullNPC(page, 2244);
 
     console.log(data);
-    console.log("Finished scrape in", (performance.now()-earlier) / 1000, "seconds");
+    console.log(
+        "Finished scrape in",
+        (performance.now() - earlier) / 1000,
+        "seconds",
+    );
 
     await browser.close();
 })();
