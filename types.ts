@@ -18,5 +18,6 @@ export interface NPC {
 
 export type NPCWithItems = {
     drops: Item[];
+    pickpocketing: Item[];
     skinning: Item[];
 } & NPC;
