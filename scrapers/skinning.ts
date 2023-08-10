@@ -2,15 +2,22 @@ import { Page } from "puppeteer";
 import { Item } from "../types";
 
 export async function scrapeAllSkinning(page: Page): Promise<Item[]> {
-    await page.click("a[href=\"#skinning\"]");
-    await page.click("xpath///div[@class=\"listview-nav\"]//a[contains(text(), \"First\")]");
+    const tabBtn = await page.$("a[href=\"#skinning\"]");
+
+    // Skinning tab is unavailable for mobs that can't be skinned
+    if(!tabBtn) {
+        return [];
+    }
+
+    await tabBtn.click();
+    await page.click("xpath///div[contains(@class, \"listview-nav\")]//a[contains(text(), \"First\")]");
 
     const results: Item[] = [];
 
     while(true) {
         results.push(...await scrapeSkinningTable(page));
 
-        const nextBtn = await page.$("xpath///div[@class=\"listview-nav\"]//a[contains(text(), \"Next\")]");
+        const nextBtn = await page.$("xpath///div[contains(@class, \"listview-nav\")]//a[contains(text(), \"Next\")]");
         const isActive = await nextBtn?.evaluate(el => el.getAttribute("data-active") === "yes");
 
         if(nextBtn && isActive) {

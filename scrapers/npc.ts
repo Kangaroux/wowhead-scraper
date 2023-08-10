@@ -1,7 +1,7 @@
 import { ElementHandle, Page } from "puppeteer";
-import { Hostility, NPC } from "../types";
+import { Hostility, NPC, NPCWithItems } from "../types";
 
-export async function scrapeNPC(page: Page, id: number): Promise<NPC> {
+export async function scrapeNPCInfo(page: Page, id: number): Promise<NPC> {
     await page.goto(`https://www.wowhead.com/classic/npc=${id}`);
 
     let factionHostility: FactionHostility = {alliance: "enemy", horde: "enemy"};

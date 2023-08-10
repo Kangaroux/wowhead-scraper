@@ -3,14 +3,14 @@ import { Item } from "../types";
 
 export async function scrapeAllDrops(page: Page): Promise<Item[]> {
     await page.click("a[href=\"#drops\"]");
-    await page.click("xpath///div[@class=\"listview-nav\"]//a[contains(text(), \"First\")]");
+    await page.click("xpath///div[contains(@class, \"listview-nav\")]//a[contains(text(), \"First\")]");
 
     const results: Item[] = [];
 
     while(true) {
         results.push(...await scrapeDropTable(page));
 
-        const nextBtn = await page.$("xpath///div[@class=\"listview-nav\"]//a[contains(text(), \"Next\")]");
+        const nextBtn = await page.$("xpath///div[contains(@class, \"listview-nav\")]//a[contains(text(), \"Next\")]");
         const isActive = await nextBtn?.evaluate(el => el.getAttribute("data-active") === "yes");
 
         if(nextBtn && isActive) {
